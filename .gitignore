@@ -10,3 +10,5 @@ yarn-error.log*
 
 .vscode/*
 /.idea/
+src/assets/.DS_Store
+src/.DS_Store

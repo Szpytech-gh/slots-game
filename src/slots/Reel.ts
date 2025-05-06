@@ -9,8 +9,8 @@ const SYMBOL_TEXTURES = [
     'symbol5.png',
 ];
 
-const SPIN_SPEED = 50; // Pixels per frame
-const SLOWDOWN_RATE = 0.95; // Rate at which the reel slows down
+const SPIN_SPEED = 15;
+const SLOWDOWN_RATE = 0.95;
 
 export class Reel {
     public container: PIXI.Container;
@@ -21,36 +21,57 @@ export class Reel {
     private isSpinning: boolean = false;
 
     constructor(symbolCount: number, symbolSize: number) {
-        this.container = new PIXI.Container();
-        this.symbols = [];
         this.symbolSize = symbolSize;
         this.symbolCount = symbolCount;
+
+        this.container = new PIXI.Container();
+        this.symbols = [];
 
         this.createSymbols();
     }
 
     private createSymbols(): void {
-        // Create symbols for the reel, arranged horizontally
+        for (let i = 0; i < this.symbolCount + 1; i++) {
+            const symbol = this.createRandomSymbol();
+            symbol.x = i * this.symbolSize;
+            symbol.y = 0;
+            this.symbols.push(symbol);
+            this.container.addChild(symbol);
+        }
     }
 
     private createRandomSymbol(): PIXI.Sprite {
-        // TODO:Get a random symbol texture
-
-        // TODO:Create a sprite with the texture
-
-        return new PIXI.Sprite();
+        const textureName = SYMBOL_TEXTURES[Math.floor(Math.random() * SYMBOL_TEXTURES.length)];
+        const texture = AssetLoader.getTexture(textureName);
+        const sprite = new PIXI.Sprite(texture);
+        sprite.width = this.symbolSize;
+        sprite.height = this.symbolSize;
+        return sprite;
     }
 
     public update(delta: number): void {
         if (!this.isSpinning && this.speed === 0) return;
 
-        // TODO:Move symbols horizontally
+        const moveX = this.speed * delta;
 
-        // If we're stopping, slow down the reel
+        for (const symbol of this.symbols) {
+            symbol.x -= moveX;
+        }
+
+        // Recycle symbols that move off-screen to the left
+        const firstSymbol = this.symbols[0];
+        if (firstSymbol.x + this.symbolSize < 0) {
+            const lastSymbol = this.symbols[this.symbols.length - 1];
+            firstSymbol.x = lastSymbol.x + this.symbolSize;
+            this.randomizeSymbolTexture(firstSymbol);
+
+            // Move first symbol to end of array
+            this.symbols.push(this.symbols.shift()!);
+        }
+
+        // Slow down if stopping
         if (!this.isSpinning && this.speed > 0) {
             this.speed *= SLOWDOWN_RATE;
-
-            // If speed is very low, stop completely and snap to grid
             if (this.speed < 0.5) {
                 this.speed = 0;
                 this.snapToGrid();
@@ -59,8 +80,17 @@ export class Reel {
     }
 
     private snapToGrid(): void {
-        // TODO: Snap symbols to horizontal grid positions
+        const firstX = this.symbols[0].x;
+        const offset = firstX % this.symbolSize;
 
+        for (const symbol of this.symbols) {
+            symbol.x -= offset;
+        }
+    }
+
+    private randomizeSymbolTexture(symbol: PIXI.Sprite): void {
+        const textureName = SYMBOL_TEXTURES[Math.floor(Math.random() * SYMBOL_TEXTURES.length)];
+        symbol.texture = AssetLoader.getTexture(textureName);
     }
 
     public startSpin(): void {
@@ -70,6 +100,5 @@ export class Reel {
 
     public stopSpin(): void {
         this.isSpinning = false;
-        // The reel will gradually slow down in the update method
     }
 }
