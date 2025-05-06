@@ -132,6 +132,7 @@ export class SlotMachine {
                             this.spinButton.texture = AssetLoader.getTexture('button_spin.png');
                             this.spinButton.interactive = true;
                         }
+                        sound.stop('Reel spin');
                     }, 500);
                 }
             }, i * 400);
