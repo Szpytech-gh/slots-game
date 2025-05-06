@@ -1,6 +1,5 @@
 import { Howl } from 'howler';
 
-// TODO: Implement sound player using the "howler" package
 // Simple map to store our sounds
 const soundLibrary: { [key: string]: Howl } = {};
 
