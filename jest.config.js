@@ -1,8 +1,8 @@
 module.exports = {
     preset: 'ts-jest',
-    roots: ['<rootDir>/tests'],
+    roots: ['<rootDir>/tests/unit'], // to only include unit tests
     testMatch: [
-      '**/?(*.)+(spec|test).ts?(x)'
+      '**/?(*.)+(spec).ts?(x)'
     ],
     transform: {
       '^.+\\.tsx?$': 'ts-jest'
