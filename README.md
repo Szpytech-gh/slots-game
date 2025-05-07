@@ -36,6 +36,7 @@ yarn test:unit
 
 ### End-to-End Tests
 E2E Tests are based on TestCafe
+
 Make sure the application is running before executing E2E tests:
 
 ```bash
@@ -53,3 +54,4 @@ yarn test:debug:e2e
 - `tests/` - Test files
   - `unit/` - Unit tests
   - `e2e/` - End-to-end tests
+  
