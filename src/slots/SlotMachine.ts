@@ -3,7 +3,7 @@ import 'pixi-spine';
 import { Reel } from './Reel';
 import { sound } from '../utils/sound';
 import { AssetLoader } from '../utils/AssetLoader';
-import {Spine} from "pixi-spine";
+import { Spine } from 'pixi-spine';
 
 const REEL_COUNT = 4;
 const SYMBOLS_PER_REEL = 6;
@@ -20,10 +20,16 @@ export class SlotMachine {
     private frameSpine: Spine | null = null;
     private winAnimation: Spine | null = null;
 
+    private reelArea: PIXI.Container; // New container for reels
+
     constructor(app: PIXI.Application) {
         this.app = app;
         this.container = new PIXI.Container();
         this.reels = [];
+
+        // Initialize the reel area container
+        this.reelArea = new PIXI.Container();
+        this.container.addChild(this.reelArea);
 
         // Center the slot machine
         this.container.x = this.app.screen.width / 2 - ((SYMBOL_SIZE * SYMBOLS_PER_REEL) / 2);
@@ -38,27 +44,40 @@ export class SlotMachine {
 
     private createBackground(): void {
         try {
-            const background = new PIXI.Graphics();
-            background.beginFill(0x000000, 0.5);
-            background.drawRect(
+            const mask = new PIXI.Graphics();
+            mask.beginFill(0xffffff);
+            mask.drawRect(
                 -20,
                 -20,
-                SYMBOL_SIZE * SYMBOLS_PER_REEL + 40, // Width now based on symbols per reel
-                REEL_HEIGHT * REEL_COUNT + REEL_SPACING * (REEL_COUNT - 1) + 40 // Height based on reel count
+                SYMBOL_SIZE * SYMBOLS_PER_REEL + 40, // Width based on the number of symbols plus a bit
+                REEL_HEIGHT * REEL_COUNT + REEL_SPACING * (REEL_COUNT - 1) + 40 // Height based on the reel count
             );
-            background.endFill();
-            this.container.addChild(background);
+            mask.endFill();
+
+            const bg = new PIXI.Graphics();
+            bg.beginFill(0x000000, 0.3);
+            bg.drawRect(
+                -20,
+                -20,
+                SYMBOL_SIZE * SYMBOLS_PER_REEL + 40,
+                REEL_HEIGHT * REEL_COUNT + REEL_SPACING * (REEL_COUNT - 1) + 40
+            );
+            bg.endFill();
+
+            this.container.addChild(bg);
+            this.container.addChild(mask);
+
+            this.reelArea.mask = mask;
         } catch (error) {
-            console.error('Error creating background:', error);
+            console.error('Error creating masked background:', error);
         }
     }
 
     private createReels(): void {
-        // Create each reel
         for (let i = 0; i < REEL_COUNT; i++) {
             const reel = new Reel(SYMBOLS_PER_REEL, SYMBOL_SIZE);
             reel.container.y = i * (REEL_HEIGHT + REEL_SPACING);
-            this.container.addChild(reel.container);
+            this.reelArea.addChild(reel.container);
             this.reels.push(reel);
         }
     }
@@ -94,7 +113,6 @@ export class SlotMachine {
         setTimeout(() => {
             this.stopSpin();
         }, 500 + (this.reels.length - 1) * 200);
-
     }
 
     private stopSpin(): void {
@@ -112,6 +130,7 @@ export class SlotMachine {
                             this.spinButton.texture = AssetLoader.getTexture('button_spin.png');
                             this.spinButton.interactive = true;
                         }
+                        sound.stop('Reel spin');
                     }, 500);
                 }
             }, i * 400);
@@ -125,9 +144,19 @@ export class SlotMachine {
         if (randomWin) {
             sound.play('win');
             console.log('Winner!');
-
-            if (this.winAnimation) {
-                // TODO: Play the win animation found in "big-boom-h" spine
+    
+            if (this.winAnimation) {        
+                this.winAnimation.visible = true;
+                
+                // Play the animation called "start" once (not looped)
+                this.winAnimation.state.setAnimation(0, 'start', false);
+                
+                // Hide the animation when it completes
+                this.winAnimation.state.addListener({
+                    complete: () => {
+                        this.winAnimation!.visible = false;
+                    }
+                });
             }
         }
     }
@@ -156,8 +185,8 @@ export class SlotMachine {
             if (winSpineData) {
                 this.winAnimation = new Spine(winSpineData.spineData);
 
-                this.winAnimation.x = (REEL_HEIGHT * REEL_COUNT + REEL_SPACING * (REEL_COUNT - 1)) / 2;
-                this.winAnimation.y = (SYMBOL_SIZE * SYMBOLS_PER_REEL) / 2;
+                this.winAnimation.x = (SYMBOL_SIZE * SYMBOLS_PER_REEL) / 2;
+                this.winAnimation.y = (REEL_HEIGHT * REEL_COUNT + REEL_SPACING * (REEL_COUNT - 1)) / 2;
 
                 this.winAnimation.visible = false;
 

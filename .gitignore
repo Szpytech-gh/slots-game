@@ -10,3 +10,7 @@ yarn-error.log*
 
 .vscode/*
 /.idea/
+src/assets/.DS_Store
+src/.DS_Store
+src/slots/Reel copy.ts
+src/.DS_Store
