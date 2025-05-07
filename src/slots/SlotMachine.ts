@@ -45,11 +45,11 @@ export class SlotMachine {
     private createBackground(): void {
         try {
             const mask = new PIXI.Graphics();
-            mask.beginFill(0xffffff); // White color mask (this is what clips the contents)
+            mask.beginFill(0xffffff);
             mask.drawRect(
                 -20,
                 -20,
-                SYMBOL_SIZE * SYMBOLS_PER_REEL + 40, // Width based on the number of symbols
+                SYMBOL_SIZE * SYMBOLS_PER_REEL + 40, // Width based on the number of symbols plus a bit
                 REEL_HEIGHT * REEL_COUNT + REEL_SPACING * (REEL_COUNT - 1) + 40 // Height based on the reel count
             );
             mask.endFill();
@@ -64,11 +64,9 @@ export class SlotMachine {
             );
             bg.endFill();
 
-            // Add both the background and the mask to the container
             this.container.addChild(bg);
             this.container.addChild(mask);
 
-            // Apply mask only to the reelArea (not the whole container)
             this.reelArea.mask = mask;
         } catch (error) {
             console.error('Error creating masked background:', error);
@@ -79,7 +77,7 @@ export class SlotMachine {
         for (let i = 0; i < REEL_COUNT; i++) {
             const reel = new Reel(SYMBOLS_PER_REEL, SYMBOL_SIZE);
             reel.container.y = i * (REEL_HEIGHT + REEL_SPACING);
-            this.reelArea.addChild(reel.container); // Add to the reelArea container
+            this.reelArea.addChild(reel.container);
             this.reels.push(reel);
         }
     }
