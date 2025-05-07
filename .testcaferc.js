@@ -16,5 +16,6 @@ module.exports = {
     skipJsErrors: true,
     skipUncaughtErrors: true,
     clientScripts: [],
-    tsConfigPath: 'tsconfig.json'
+    tsConfigPath: 'tsconfig.json',
+    baseUrl: 'http://localhost:9000'
 };

@@ -15,7 +15,6 @@ let initialState: ReelState[];
 let buttonPos: ButtonPosition | null;
 
 fixture`Slots Game Click Spin Tests`
-    .page`http://localhost:9000`
     .beforeEach(async t => {
         const spinCompleted = await waitForGameInitialization();
         await t.expect(spinCompleted).ok('Game should initialize within timeout');
