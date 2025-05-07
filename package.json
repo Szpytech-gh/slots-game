@@ -11,8 +11,7 @@
     "test:unit": "jest --config jest.config.js",
     
     "test:e2e": "testcafe chrome tests/e2e/**/*.test.ts",
-    "test:debug:e2e": "testcafe chrome tests/e2e/**/*.test.ts --debug-mode",
-    "test:e2e:report": "testcafe chrome tests/e2e/**/*.test.ts --reporter html:tests/e2e-report.html"
+    "test:debug:e2e": "testcafe chrome tests/e2e/**/*.test.ts --debug-mode"
   },
   "dependencies": {
     "@types/howler": "^2.2.12",
