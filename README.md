@@ -50,6 +50,9 @@ yarn test:e2e
 yarn test:debug:e2e
 ```
 
+### AI Tests
+Just added an example video of some AI web agent driven slot game verification as I recently worked on such project and think its pretty nice! Its under `ai-driven-tests`
+
 ## Project Test Structure
 - `tests/` - Test files
   - `unit/` - Unit tests
